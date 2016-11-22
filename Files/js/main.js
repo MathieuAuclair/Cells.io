@@ -1,4 +1,3 @@
-
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
@@ -49,7 +48,7 @@ var update = setInterval(function(){
 	{
 		foodCells[x].x -= movementX*myCellSpeed;
 		foodCells[x].y -= movementY*myCellSpeed;
-		if(Math.abs(myCell.x-foodCells[x].x)<myCell.radius && Math.abs(myCell.y-foodCells[x].y)<myCell.radius)
+		if(Math.abs(myCell.x-foodCells[x].x)<myCell.radius && Math.abs(myCell.y-foodCells[x].y)<myCell.radius) //check if it did eat food blobs
 		{
 			respawnFood(x);
 			myCell.radius += 1;
