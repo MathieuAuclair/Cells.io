@@ -1,6 +1,6 @@
 
-var canvas = document.getElementById("canvas")
-var ctx = canvas.getContext("2d");;
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
 
 var foodNumber = 10;
 var myCellSpeed = 8;
@@ -29,12 +29,16 @@ var foodCells = [];
 //init value for food cells
 for (x = 0; x < foodNumber; x++)
 	{
+		respawnFood(x);
+	}
+
+function respawnFood(x)
+{
 		foodCells[x] = new cells(10);
 		foodCells[x].x = Math.round(Math.random()*canvas.width);
 		foodCells[x].y = Math.round(Math.random()*canvas.height);
 		foodCells[x].color = "green";
-	}
-	
+}
 	
 //update function
 var update = setInterval(function(){
@@ -45,12 +49,16 @@ var update = setInterval(function(){
 	{
 		foodCells[x].x -= movementX*myCellSpeed;
 		foodCells[x].y -= movementY*myCellSpeed;
+		if(Math.abs(myCell.x-foodCells[x].x)<myCell.radius && Math.abs(myCell.y-foodCells[x].y)<myCell.radius)
+		{
+			respawnFood(x);
+			myCell.radius += 1;
+			myCellSpeed = myCellSpeed * 0.99;
+		}
 		drawCells(foodCells[x]);
 	}
 
-	
-	//draw player since every frame canvas is erased
-	drawCells(myCell);
+	drawCells(myCell);//need to draw player each frame since he's erase each frame
 	
 },16);//60frame per second
 
