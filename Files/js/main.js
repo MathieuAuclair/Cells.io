@@ -2,6 +2,8 @@
 var canvas = document.getElementById("canvas")
 var ctx = canvas.getContext("2d");;
 
+var foodNumber = 10;
+var myCellSpeed = 8;
 
 function drawCells(object)
 {
@@ -16,7 +18,6 @@ function cells(size)
 {
 	this.x = canvas.width/2;
 	this.y = canvas.width/2;
-	this.speed = 10;
 	this.radius = size;
 	this.color = "rgb(0,0,100)";
 }
@@ -26,7 +27,7 @@ var myCell = new cells(30);
 //food cells
 var foodCells = [];
 //init value for food cells
-for (x = 0; x < 10; x++)
+for (x = 0; x < foodNumber; x++)
 	{
 		foodCells[x] = new cells(10);
 		foodCells[x].x = Math.round(Math.random()*canvas.width);
@@ -38,24 +39,23 @@ for (x = 0; x < 10; x++)
 //update function
 var update = setInterval(function(){
 	
-	myCell.x += movementX*myCell.speed;
-	myCell.y += movementY*myCell.speed;
-	
 	ctx.clearRect(0,0,canvas.width, canvas.height);//make sure you draw everything after this line
 	
-	//for future fixed camera!
-	for (i = 0; i < 10; i++)
+	for (x = 0; x < foodNumber; x++) //to have a fixed camera i move food
 	{
-		drawCells(foodCells[i]);
+		foodCells[x].x -= movementX*myCellSpeed;
+		foodCells[x].y -= movementY*myCellSpeed;
+		drawCells(foodCells[x]);
 	}
+
 	
 	//draw player since every frame canvas is erased
 	drawCells(myCell);
 	
 },16);//60frame per second
 
-var movementY = 1;
-var movementX = 1;
+var movementY = 0;
+var movementX = 0;
 
 //mouse position detection
 function mousePosition(e) {
