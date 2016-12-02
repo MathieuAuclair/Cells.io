@@ -11,6 +11,22 @@ var pool = mysql.createPool({
 	port: 3306 
 });
 
+
+//trying to insert values
+
+pool.getConnection(function(error, conn){
+	var newPlayer = { NOM: 'Winnie', PLAYER_ID: 1 , RADIUS: 8 , X: 50 , Y: 55};
+	conn.query('INSERT INTO PLAYER SET ?', newPlayer, function(error,results){
+	  if(error) 
+		  throw error;
+	  else
+	  console.log('SUCESSFULL INSERT ' + JSON.stringify(results));
+	});
+});
+
+
+// reading information from database
+
 pool.getConnection(function(error, conn){
 	var queryString = 'SELECT * FROM PLAYER';
 	conn.query(queryString, function (error,results)
@@ -33,5 +49,7 @@ pool.getConnection(function(error, conn){
 	})
 	conn.release();
 });
+
+
 
 
