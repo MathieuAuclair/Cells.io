@@ -1,7 +1,7 @@
 
-
-
-var mysql = require('mysql');
+var http = require("http");
+var mysql = require("mysql");
+var queryResult;
 
 var pool = mysql.createPool({
 	host: 'localhost',
@@ -12,7 +12,7 @@ var pool = mysql.createPool({
 });
 
 pool.getConnection(function(error, conn){
-	var queryString = 'SELECT NOM FROM PLAYER';
+	var queryString = 'SELECT * FROM PLAYER';
 	conn.query(queryString, function (error,results)
 	{
 		if(error)
@@ -21,7 +21,14 @@ pool.getConnection(function(error, conn){
 		}
 		else
 		{
-			console.log(results)
+			console.log(results);
+			queryResult = results[0];
+
+			http.createServer(function(request, response){
+			response.writeHead(200, {'Content-Type' : 'text/plain' });
+			response.write("name is " + JSON.stringify(queryResult.NOM));
+			response.end();
+			}).listen(8080);
 		}
 	})
 	conn.release();
