@@ -1,7 +1,7 @@
 
 var http = require("http");
 var mysql = require("mysql");
-var queryResult;
+
 
 var pool = mysql.createPool({
 	host: 'localhost',
@@ -20,10 +20,25 @@ pool.getConnection(function(error, conn){
 	  if(error) 
 		  throw error;
 	  else
-	  console.log('SUCESSFULL INSERT ' + JSON.stringify(results));
+	  console.log('SUCESSFULL INSERT');
 	});
 });
 
+//modify the information
+
+pool.getConnection(function(error, conn){
+	conn.query(
+		"UPDATE PLAYER SET X = ? WHERE PLAYER_ID = ?",
+		[95, 1],
+		function(error, results)
+		{
+			if(error)
+				throw error
+			else
+				console.log("Update info : " + results.changedRows);
+		}
+	);
+});
 
 // reading information from database
 
@@ -38,18 +53,13 @@ pool.getConnection(function(error, conn){
 		else
 		{
 			console.log(results);
-			queryResult = results[0];
 
 			http.createServer(function(request, response){
 			response.writeHead(200, {'Content-Type' : 'text/plain' });
-			response.write("name is " + JSON.stringify(queryResult.NOM));
+			response.write("name is " + JSON.stringify(results[0].NOM));
 			response.end();
 			}).listen(8080);
 		}
-	})
+	});
 	conn.release();
 });
-
-
-
-
