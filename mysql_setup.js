@@ -1,9 +1,11 @@
+//load these with npm manager before
 var querystring = require('querystring');
 var mysql = require("mysql");
 var http = require("http");
 var fs = require("fs");
+var url = require("url");
 
-var pool = mysql.createPool({
+var pool = mysql.createPool({ //giving program acces to database with info pool
 	host: 'localhost',
 	user: 'Mathieu',
 	password: 'Aucm12099709',
@@ -12,7 +14,7 @@ var pool = mysql.createPool({
 });
 
 
-//insert values
+//function that insert values in database with a different poolConnection
 function insertNewPlayer(idPlayer, nomPlayer)
 {
 	pool.getConnection(function(error, conn){
@@ -27,27 +29,28 @@ function insertNewPlayer(idPlayer, nomPlayer)
 }
 
 //modify the information
-/*
-pool.getConnection(function(error, conn){
-	conn.query(
-		"UPDATE PLAYER SET X = ? WHERE PLAYER_ID = ?",
-		[95, 1],
-		function(error, results)
-		{
-			if(error)
-				throw error
-			else
-				console.log("Update info : " + results.changedRows);
-		}
-	);
-});
-*/
+function UpdateInfo(id)
+{
+	pool.getConnection(function(error, conn){
+		conn.query(
+			"UPDATE PLAYER SET X = ? WHERE PLAYER_ID = ?",
+			[95, id],
+			function(error, results)
+			{
+				if(error)
+					throw error
+				else
+					console.log("Update info : " + results.changedRows);
+			}
+		);
+	});
+}
 
 
 // create server and load files
-pool.getConnection(function(error, conn){
-	var queryString = 'SELECT * FROM PLAYER';
-	conn.query(queryString, function (error,results)
+pool.getConnection(function(error, conn){//get acces to database
+	var queryString = 'SELECT * FROM PLAYER'; //prepare mysql request
+	conn.query(queryString, function (error,results) //inicialise connection to database
 	{
 		if(error)
 		{
@@ -57,30 +60,22 @@ pool.getConnection(function(error, conn){
 		{
 			//console.log(results);
 			
-			http.createServer(function(request, response)
+			http.createServer(function(request, response) //create a server to interact with server and client
 			{
-			var idAttributed = true;	
-				
-				function get(fileType, nameFile){ 
-					fs.readFile(nameFile,function (err, data){
-						response.writeHead(200, {'Content-Type': fileType,'Content-Length':data.length});
+				if(request.url=='/index.html' || request.url=='/') 
+				{
+					
+					fs.readFile("index.html",function (err, data){
+						response.writeHead(200, {'Content-Type': "html",'Content-Length':data.length});
 						response.write(data);
-						console.log("GET / " + nameFile);
+						console.log("GET / " + request.url);
 						response.end();
 					});
-				}
-				
-				get("html","index.html");
-				
-				//giving a random id
-				if(idAttributed)
-				{
+					//give a id to player
 					var id = Math.round(Math.random()*999);
-					insertNewPlayer(id, "Mathieu");
+					//insertNewPlayer(id, "Mathieu");
 					console.log("session id is : " + id);
-					idAttributed = false;
 				}
-				
 				
 				//response.writeHead(200, {'Content-Type' : 'text/html' });
 				//response.write("name is " + JSON.stringify(results[0].NOM)); 
@@ -90,3 +85,25 @@ pool.getConnection(function(error, conn){
 	});
 	conn.release();
 });
+
+
+//load data
+function loadInfo(id)
+{
+	pool.getConnection(function(error, conn)
+	{//get acces to database
+		var queryString = 'SELECT * FROM PLAYER WHERE PLAYER_ID = ' + id; //prepare mysql request
+		conn.query(queryString, function (error,results) //inicialise connection to database
+		{
+			if(error)
+			{
+				throw error;
+			}
+			else
+			{
+				console.log("name is " + JSON.stringify(results[0].NOM));//display name
+			}
+		});
+	});
+}
+
