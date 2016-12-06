@@ -13,17 +13,18 @@ var pool = mysql.createPool({
 
 
 //insert values
-/*
-pool.getConnection(function(error, conn){
-	var newPlayer = { NOM: 'Winnie', PLAYER_ID: 1 , RADIUS: 8 , X: 50 , Y: 55};
-	conn.query('INSERT INTO PLAYER SET ?', newPlayer, function(error,results){
-	  if(error) 
-		  throw error;
-	  else
-	  console.log('SUCESSFULL INSERT');
+function insertNewPlayer(idPlayer, nomPlayer)
+{
+	pool.getConnection(function(error, conn){
+		var newPlayer = { NOM: nomPlayer, PLAYER_ID: idPlayer , RADIUS: 8 , X: 50 , Y: 55};
+		conn.query('INSERT INTO PLAYER SET ?', newPlayer, function(error,results){
+		  if(error) 
+			  throw error;
+		  else
+		  console.log('SUCESSFULL INSERT');
+		});
 	});
-});
-*/
+}
 
 //modify the information
 /*
@@ -55,10 +56,10 @@ pool.getConnection(function(error, conn){
 		else
 		{
 			//console.log(results);
-
+			
 			http.createServer(function(request, response)
 			{
-				
+			var idAttributed = true;	
 				
 				function get(fileType, nameFile){ 
 					fs.readFile(nameFile,function (err, data){
@@ -69,11 +70,16 @@ pool.getConnection(function(error, conn){
 					});
 				}
 				
-				
-				
 				get("html","index.html");
-				//get("javascript","app.js"); //doesn't on the side
 				
+				//giving a random id
+				if(idAttributed)
+				{
+					var id = Math.round(Math.random()*999);
+					insertNewPlayer(id, "Mathieu");
+					console.log("session id is : " + id);
+					idAttributed = false;
+				}
 				
 				
 				//response.writeHead(200, {'Content-Type' : 'text/html' });
