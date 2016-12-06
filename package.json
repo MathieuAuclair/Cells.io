@@ -1,8 +1,8 @@
 {
   "name": "cells.io",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "a game just like agar.io",
-  "main": "main.js",
+  "main": "mysql_setup.js",
   "dependencies": {
     "mysql": "^2.12.0"
   },
