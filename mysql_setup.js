@@ -49,7 +49,7 @@ function UpdateInfo(id)
 
 // create server and load files
 pool.getConnection(function(error, conn){//get acces to database
-	var queryString = 'SELECT * FROM PLAYER'; //prepare mysql request
+	var queryString = "SELECT * FROM PLAYER";
 	conn.query(queryString, function (error,results) //inicialise connection to database
 	{
 		if(error)
@@ -57,9 +57,7 @@ pool.getConnection(function(error, conn){//get acces to database
 			throw error;
 		}
 		else
-		{
-			//console.log(results);
-			
+		{	
 			http.createServer(function(request, response) //create a server to interact with server and client
 			{
 				if(request.url=='/index.html' || request.url=='/') 
@@ -69,16 +67,17 @@ pool.getConnection(function(error, conn){//get acces to database
 						response.writeHead(200, {'Content-Type': "html",'Content-Length':data.length});
 						response.write(data);
 						console.log("GET / " + request.url);
-						response.end();
+						response.end(dropPlayer(id));
 					});
 					//give a id to player
+						//need to check if id exist when ur going to know thred
 					var id = Math.round(Math.random()*999);
-					//insertNewPlayer(id, "Mathieu");
+					 
 					console.log("session id is : " + id);
+					insertNewPlayer(id, "Mathieu");
+					loadInfo(id);
+						
 				}
-				
-				//response.writeHead(200, {'Content-Type' : 'text/html' });
-				//response.write("name is " + JSON.stringify(results[0].NOM)); 
 			}).listen(8080);
 			console.log(" * \n * \n Server is running on localhost \n : 127.0.0.1:8080 \n *"); //launch server display
 		}
@@ -86,22 +85,43 @@ pool.getConnection(function(error, conn){//get acces to database
 	conn.release();
 });
 
+//function that drop player from database
 
-//load data
+function dropPlayer(id)
+{
+	pool.getConnection(function(error, conn){
+		conn.query(
+			"DELETE FROM PLAYER WHERE PLAYER_ID = ?",
+			[id],
+			function(error, results)
+			{
+				if(error)
+					throw error
+				else
+					console.log("data drop successfully \n / \n / \n /");
+			}
+		);
+	});
+}
+
+
+//function to load data with player id
 function loadInfo(id)
 {
 	pool.getConnection(function(error, conn)
 	{//get acces to database
-		var queryString = 'SELECT * FROM PLAYER WHERE PLAYER_ID = ' + id; //prepare mysql request
+		var queryString = 'IF EXISTS SELECT * FROM PLAYER WHERE PLAYER_ID = ' + id; //prepare mysql request
 		conn.query(queryString, function (error,results) //inicialise connection to database
 		{
 			if(error)
 			{
-				throw error;
+				console.log("CAN'T DISPLAY INFORMATION, ID DOESN'T EXIST");
+				return true;
 			}
 			else
 			{
 				console.log("name is " + JSON.stringify(results[0].NOM));//display name
+				return false;
 			}
 		});
 	});
