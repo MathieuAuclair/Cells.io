@@ -37,7 +37,7 @@ pool.getConnection(function(error, conn){//get acces to database
 						response.writeHead(200, {'Content-Type': "html",'Content-Length':data.length});
 						response.write(data);
 						console.log("GET / " + request.url);
-						response.end(insertNewPlayer(id, "Mathieu"));
+						response.end(insertNewPlayer(id, "Mathieu", conn));
 					});
 				}
 			}).listen(8080);
@@ -48,86 +48,74 @@ pool.getConnection(function(error, conn){//get acces to database
 });
 
 //function that insert values in database with a different poolConnection
-function insertNewPlayer(idPlayer, nomPlayer)
+function insertNewPlayer(idPlayer, nomPlayer, conn)
 {
-	pool.getConnection(function(error, conn){
-		var newPlayer = { NOM: nomPlayer, PLAYER_ID: idPlayer , RADIUS: 8 , X: 50 , Y: 55};
-		conn.query('INSERT INTO PLAYER SET ?', newPlayer, function(error,results)
-			{
-			  if(error) 
-				  throw error;
-			  else
-			  console.log('SUCESSFULL INSERT');
+	var newPlayer = { NOM: nomPlayer, PLAYER_ID: idPlayer , RADIUS: 8 , X: 50 , Y: 55};
+	conn.query('INSERT INTO PLAYER SET ?', newPlayer, function(error,results)
+		{
+		  if(error) 
+			  throw error;
+		  else
+		  console.log('SUCESSFULL INSERT');
 
-			}
-		);
-		conn.release(loadInfo(idPlayer));
-	});
+		}
+	);
+	loadInfo(idPlayer, conn);
 }
 
 //function to load data with player id
-function loadInfo(id)
+function loadInfo(id, conn)
 {
-	pool.getConnection(function(error, conn)
-	{//get acces to database
-		var queryString = 'IF EXISTS SELECT * FROM PLAYER WHERE PLAYER_ID = ' + id; //prepare mysql request
-		conn.query(queryString, function (error,results) //inicialise connection to database
+	var queryString = 'IF EXISTS SELECT * FROM PLAYER WHERE PLAYER_ID = ' + id; //prepare mysql request
+	conn.query(queryString, function (error,results) //inicialise connection to database
+	{
+		if(error)
 		{
-			if(error)
-			{
-				console.log("CAN'T DISPLAY INFORMATION, ID DOESN'T EXIST");
-				return true;
-			}
-			else
-			{
-				console.log("name is " + JSON.stringify(results[0].NOM));//display name
-				return false;
-			}
-		});
-		conn.release();
+			console.log("CAN'T DISPLAY INFORMATION, ID DOESN'T EXIST");
+			return true;
+		}
+		else
+		{
+			console.log("name is " + JSON.stringify(results[0].NOM));//display name
+			return false;
+		}
 	});
 }
 
 //modify the information
-function UpdateInfo(id)
+function UpdateInfo(id, conn)
 {
-	pool.getConnection(function(error, conn){
-		conn.query
-		(
-			"UPDATE PLAYER SET X = ? WHERE PLAYER_ID = ?",
-			[95, id],
-			function(error, results)
-			{
-				if(error)
-					throw error
-				else
-					console.log("Update info : " + results.changedRows);
-			}
-		);
-		conn.release();
-	});
+	conn.query
+	(
+		"UPDATE PLAYER SET X = ? WHERE PLAYER_ID = ?",
+		[95, id],
+		function(error, results)
+		{
+			if(error)
+				throw error
+			else
+				console.log("Update info : " + results.changedRows);
+		}
+	);
 }	
 
 	
 //function that drop player from database
 
-function dropPlayer(id)
+function dropPlayer(id, conn)
 {
-	pool.getConnection(function(error, conn){
-		conn.query
-		(
-			"DELETE FROM PLAYER WHERE PLAYER_ID = ?",
-			[id],
-			function(error, results)
-			{
-				if(error)
-					throw error
-				else
-					console.log("data drop successfully! ");
-			}
-		);
-		conn.release();
-	});
+	conn.query
+	(
+		"DELETE FROM PLAYER WHERE PLAYER_ID = ?",
+		[id],
+		function(error, results)
+		{
+			if(error)
+				throw error
+			else
+				console.log("data drop successfully! ");
+		}
+	);
 }
 
 
