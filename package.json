@@ -1,0 +1,33 @@
+{
+  "name": "cells.io",
+  "version": "1.0.0",
+  "description": "similar game to agar.io",
+  "main": "server.js",
+  "dependencies": {},
+  "devDependencies": {
+  "mysql":"*",
+  "express":"*",
+  "socket.io":"*",
+  "http":"*"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MathieuAuclair/Cells.io.git"
+  },
+  "keywords": [
+    "minigame",
+    "nodeJS",
+    "express",
+    "socket.io"
+  ],
+  "author": "Mathieu Auclair",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MathieuAuclair/Cells.io/issues"
+  },
+  "homepage": "https://github.com/MathieuAuclair/Cells.io#readme"
+}
