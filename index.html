@@ -3,13 +3,25 @@
 	<head>
 		<title>Cells.io</title>
 		<meta charset="utf-8"></meta>
+		<script src="/socket.io/socket.io.js"></script>
 	</head>
 	<body>
 		<center>
 			<canvas style="border:1px solid black;" width="500" height="500" id="canvas"></canvas>
 		</center>
-		
+		 
 		<script type="text/javascript">
+			//connection with socket
+			
+			var socket = io.connect();
+			var messageSend = "Message from client";
+			var message = socket.emit("sendData", messageSend);
+			socket.emit("updatePlayer");//send data to server
+			
+			
+			
+			//canvas game
+		
 			var canvas = document.getElementById("canvas");
 			var ctx = canvas.getContext("2d");
 
@@ -88,5 +100,6 @@
 				 }
 			}
 		</script>
+		
 	</body>
 </html>
