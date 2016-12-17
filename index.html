@@ -16,9 +16,11 @@
 			var socket = io.connect();
 			var messageSend = "Message from client";
 			var message = socket.emit("sendData", messageSend);
-			socket.emit("updatePlayer");//send data to server
 			
-			
+			 socket.emit('chat message','this is working');
+			 socket.on('chat message', function(msg){
+				console.log(msg);
+			 });
 			
 			//canvas game
 		

@@ -32,8 +32,10 @@ io.sockets.on('connection', function(socket){
 		io.emit("new message", {msg: data});
 	});
 	
-	//send data to server
-	socket.on('updatePlayer' , function () {
-	console.log("Someone just moved on the map!");
+	//recive from client and send back
+	socket.on('chat message', function(msg){
+		io.emit('chat message', msg);
 	});
+
+	
 });
