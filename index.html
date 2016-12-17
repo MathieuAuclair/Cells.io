@@ -2,7 +2,7 @@
 <html onmousemove="mousePosition(event)">
 	<head>
 		<title>Cells.io</title>
-		<meta charset="utf-8"></meta>
+		<meta charset="utf-8"/>
 		<script src="/socket.io/socket.io.js"></script>
 	</head>
 	<body>
@@ -14,13 +14,18 @@
 			//connection with socket
 			
 			var socket = io.connect();
-			var messageSend = "Message from client";
-			var message = socket.emit("sendData", messageSend);
+			//var messageSend = "Message from client";
+			//var message = socket.emit("sendData", messageSend);
 			
-			 socket.emit('chat message','this is working');
-			 socket.on('chat message', function(msg){
-				console.log(msg);
-			 });
+			
+			//send info to server
+			function sendInfoToServer(data)
+			{
+				socket.emit('position change', data);
+				socket.on('position change', function(msg){
+					return msg;
+				});
+			}
 			
 			//canvas game
 		
@@ -28,7 +33,6 @@
 			var ctx = canvas.getContext("2d");
 
 			var foodNumber = 10;
-			var myCellSpeed = 8;
 
 			function drawCells(object)
 			{
@@ -44,11 +48,13 @@
 				this.x = canvas.width/2;
 				this.y = canvas.width/2;
 				this.radius = size;
-				this.color = "rgb(0,0,100)";
+				this.color = "purple";
+				this.speed = 0;
 			}
 
 			//player cells
 			var myCell = new cells(30);
+			myCell.speed = 8; //giving speed to player since it's the only cell to move
 			//food cells
 			var foodCells = [];
 			//init value for food cells
@@ -72,19 +78,18 @@
 				
 				for (x = 0; x < foodNumber; x++) //to have a fixed camera i move food
 				{
-					foodCells[x].x -= movementX*myCellSpeed;
-					foodCells[x].y -= movementY*myCellSpeed;
+					foodCells[x].x -= movementX*myCell.speed;
+					foodCells[x].y -= movementY*myCell.speed;
 					if(Math.abs(myCell.x-foodCells[x].x)<myCell.radius && Math.abs(myCell.y-foodCells[x].y)<myCell.radius)
 					{
 						respawnFood(x);
 						myCell.radius += 1;
-						myCellSpeed = myCellSpeed * 0.99;
+						myCell.speed = myCell.speed * 0.99;
+						console.log(sendInfoToServer(myCell));
 					}
 					drawCells(foodCells[x]);
 				}
-
 				drawCells(myCell);//need to draw player each frame since he's erase each frame
-				
 			},16);//60frame per second
 
 			var movementY = 0;

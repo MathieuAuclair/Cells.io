@@ -33,8 +33,9 @@ io.sockets.on('connection', function(socket){
 	});
 	
 	//recive from client and send back
-	socket.on('chat message', function(msg){
-		io.emit('chat message', msg);
+	socket.on('position change', function(msg){
+		jsonMsg = JSON.stringify(msg)
+		io.emit('position change', jsonMsg);
 	});
 
 	
