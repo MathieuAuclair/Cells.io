@@ -25,7 +25,7 @@
 			{
 				socket.emit('update', object);
 				socket.on('update', function(listObject){
-					// need to draw object in the list
+					cellList = listObject;//security leak here but who care for now... lol
 				});
 			}
 			
@@ -33,9 +33,9 @@
 		
 			var canvas = document.getElementById("canvas");
 			var ctx = canvas.getContext("2d");
-
+			
 			var foodNumber = 10;
-
+			
 			function drawCells(object)
 			{
 				ctx.beginPath();
@@ -51,49 +51,35 @@
 				this.y = canvas.width/2;
 				this.radius = size;
 				this.color = "purple";
-				this.speed = 0;
+				this.speed = 2;
 			}
 
 			//player cells
+			var cellList;
 			var myCell = new cells(30);
-			myCell.speed = 8; //giving speed to player since it's the only cell to move
+			newPlayer(myCell); //send new player info to server
 			
-			newPlayer(myCell); //send info to server
-			//food cells
-			var foodCells = [];
-			//init value for food cells
-			for (x = 0; x < foodNumber; x++)
-				{
-					respawnFood(x);
-				}
-
-			function respawnFood(x)
-			{
-					foodCells[x] = new cells(10);
-					foodCells[x].x = Math.round(Math.random()*canvas.width);
-					foodCells[x].y = Math.round(Math.random()*canvas.height);
-					foodCells[x].color = "purple";
-			}
+			//local value for camera
+			xCamera = 0;
+			yCamera = 0;
 				
 			//update function
 			var update = setInterval(function(){
 				
 				ctx.clearRect(0,0,canvas.width, canvas.height);//make sure you draw everything after this line
-				
-				for (x = 0; x < foodNumber; x++) //to have a fixed camera i move food
-				{
-					foodCells[x].x -= movementX*myCell.speed;
-					foodCells[x].y -= movementY*myCell.speed;
-					if(Math.abs(myCell.x-foodCells[x].x)<myCell.radius && Math.abs(myCell.y-foodCells[x].y)<myCell.radius)
-					{
-						respawnFood(x);
-						myCell.radius += 1;
-						myCell.speed = myCell.speed * 0.99;
-						
-					}
-					drawCells(foodCells[x]);
-				}
 				sendInfoToServer(myCell);//sending our position to the server
+				for (x = 0; x < cellList.length; x++) //to have a fixed camera I move other player
+				{
+					xCamera -= movementX*myCell.speed;
+					yCamera -= movementY*myCell.speed;
+					if(socket.id != cellList[x].id)
+					{
+					cellList[x].cell.x += xCamera;
+					cellList[x].cell.y += yCamera;
+					drawCells(cellList[x].cell);
+					}
+				}
+				drawCells(myCell);
 			},16);//60frame per second
 
 			var movementY = 0;
