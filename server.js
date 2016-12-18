@@ -26,23 +26,23 @@ io.sockets.on('connection', function(socket){
 	//disconnect
 	socket.on('disconnect', function(data){
 	connections.splice(connections.indexOf(socket), 1);
-	console.log(" %s Disconnected from server", connections.length);
+	console.log(" %s Connected with server", connections.length);
 	});	
 	
 	//recive from client and send back
 	socket.on('update', function(object){
-		var index; //used to find the position of client cell
+		var index = 0; //used to find the position of client cell
 		for(i = 0; socket.id != cellList[i].id; i++)
 			{
 				index = i;
 			}
-		cellList[++index] = new player(object, socket.id);//had a few issue so instanciate a new object was easier
+		//console.log(index + " : " + JSON.stringify(cellList[index]));//keep it in case!
+		JSON.stringify(cellList[index]).cell = object;//had a few issue so instanciate a new object was easier
 		io.emit('update', cellList);//security leak, but i just want it to work so... no big deal!
 	});
 	
 	//call a new player
 	socket.on("new player", function(object){
-		cellList[cellList.length] = new player(object, socket.id)
-		console.log(cellList.length);
+		cellList[cellList.length] = new player(object, socket.id);
 	});
 });

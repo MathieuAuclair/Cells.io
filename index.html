@@ -24,8 +24,8 @@
 			function sendInfoToServer(object)
 			{
 				socket.emit('update', object);
-				socket.on('update', function(listObject){
-					cellList = listObject;//security leak here but who care for now... lol
+				socket.on('update', function(objectList){
+					cellList = objectList;//security leak here but who care for now... lol
 				});
 			}
 			
@@ -51,7 +51,7 @@
 				this.y = canvas.width/2;
 				this.radius = size;
 				this.color = "purple";
-				this.speed = 2;
+				this.speed = 0.5;
 			}
 
 			//player cells
@@ -72,7 +72,7 @@
 				{
 					xCamera -= movementX*myCell.speed;
 					yCamera -= movementY*myCell.speed;
-					if(socket.id != cellList[x].id)
+					if(socket.id != cellList[x].socketId)
 					{
 					cellList[x].cell.x += xCamera;
 					cellList[x].cell.y += yCamera;
