@@ -26,6 +26,7 @@
 				socket.emit('update', object);
 				socket.on('update', function(objectList){
 					cellList = objectList;//security leak here but who care for now... lol
+					//console.log(JSON.stringify(cellList[x].cell.x));// in case for test!
 				});
 			}
 			
@@ -33,8 +34,6 @@
 		
 			var canvas = document.getElementById("canvas");
 			var ctx = canvas.getContext("2d");
-			
-			var foodNumber = 10;
 			
 			function drawCells(object)
 			{
@@ -50,12 +49,12 @@
 				this.x = canvas.width/2;
 				this.y = canvas.width/2;
 				this.radius = size;
-				this.color = "purple";
+				this.color = "blue";
 				this.speed = 0.5;
 			}
 
 			//player cells
-			var cellList;
+			var cellList = [];
 			var myCell = new cells(30);
 			newPlayer(myCell); //send new player info to server
 			
@@ -72,14 +71,14 @@
 				{
 					xCamera -= movementX*myCell.speed;
 					yCamera -= movementY*myCell.speed;
-					if(socket.id != cellList[x].socketId)
+					//console.log(socket.id + " : " + JSON.stringify(cellList[x]));//keep in case!
+					if(socket.id != JSON.stringify(cellList[x].socketId))
 					{
-					cellList[x].cell.x += xCamera;
-					cellList[x].cell.y += yCamera;
-					drawCells(cellList[x].cell);
+					JSON.stringify(cellList[x].cell.x) + xCamera;
+					JSON.stringify(cellList[x].cell.y) + yCamera;//here's a problem\\\
 					}
+				drawCells(JSON.stringify(cellList[x].cell));
 				}
-				drawCells(myCell);
 			},16);//60frame per second
 
 			var movementY = 0;
