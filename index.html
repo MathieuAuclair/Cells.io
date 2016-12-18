@@ -14,16 +14,18 @@
 			//connection with socket
 			
 			var socket = io.connect();
-			//var messageSend = "Message from client";
-			//var message = socket.emit("sendData", messageSend);
 			
+			function newPlayer(object)
+			{
+				socket.emit("new player", object);
+			}
 			
 			//send info to server
-			function sendInfoToServer(data)
+			function sendInfoToServer(object)
 			{
-				socket.emit('position change', data);
-				socket.on('position change', function(msg){
-					return msg;
+				socket.emit('update', object);
+				socket.on('update', function(listObject){
+					// need to draw object in the list
 				});
 			}
 			
@@ -55,6 +57,8 @@
 			//player cells
 			var myCell = new cells(30);
 			myCell.speed = 8; //giving speed to player since it's the only cell to move
+			
+			newPlayer(myCell); //send info to server
 			//food cells
 			var foodCells = [];
 			//init value for food cells
@@ -68,7 +72,7 @@
 					foodCells[x] = new cells(10);
 					foodCells[x].x = Math.round(Math.random()*canvas.width);
 					foodCells[x].y = Math.round(Math.random()*canvas.height);
-					foodCells[x].color = "green";
+					foodCells[x].color = "purple";
 			}
 				
 			//update function
@@ -85,11 +89,11 @@
 						respawnFood(x);
 						myCell.radius += 1;
 						myCell.speed = myCell.speed * 0.99;
-						console.log(sendInfoToServer(myCell));
+						
 					}
 					drawCells(foodCells[x]);
 				}
-				drawCells(myCell);//need to draw player each frame since he's erase each frame
+				sendInfoToServer(myCell);//sending our position to the server
 			},16);//60frame per second
 
 			var movementY = 0;

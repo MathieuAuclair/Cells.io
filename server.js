@@ -12,31 +12,37 @@ app.get('/',function(request, response){
 	response.sendFile(__dirname + '/index.html');	
 });
 
+var cellList = []; //list of player we send to client so he can see everyone
+function player(cell, id){ //constructor to keep track of different cells in cellList
+	this.id = id;
+	this.cell = cell;
+}
+
 io.sockets.on('connection', function(socket){
+	//connection
 	connections.push(socket);
 	console.log(" %s Connected with server", connections.length);
-	
 	
 	//disconnect
 	socket.on('disconnect', function(data){
 	connections.splice(connections.indexOf(socket), 1);
 	console.log(" %s Disconnected from server", connections.length);
-	});
-	
-	var ClientData;	
-
-	//recive data from client
-	socket.on("sendData", function(data){
-		console.log(data);
-		ClientData = data;
-		io.emit("new message", {msg: data});
-	});
+	});	
 	
 	//recive from client and send back
-	socket.on('position change', function(msg){
-		jsonMsg = JSON.stringify(msg)
-		io.emit('position change', jsonMsg);
+	socket.on('update', function(object){
+		var index; //used to find the position of client cell
+		for(i = 0; socket.id != cellList[i].id; i++)
+			{
+				index = i;
+			}
+		cellList[++index] = new player(object, socket.id);//had a few issue so instanciate a new object was easier
+		io.emit('update', cellList);//security leak, but i just want it to work so... no big deal!
 	});
-
 	
+	//call a new player
+	socket.on("new player", function(object){
+		cellList[cellList.length] = new player(object, socket.id)
+		console.log(cellList.length);
+	});
 });
