@@ -36,9 +36,13 @@ io.sockets.on('connection', function(socket){
 			{
 				index = i;
 			}
-		//console.log(index + " : " + JSON.stringify(cellList[index]));//keep it in case!
-		JSON.stringify(cellList[index]).cell = object;//had a few issue so instanciate a new object was easier
-		io.emit('update', cellList);//security leak, but i just want it to work so... no big deal!
+			console.log("previous : " + JSON.stringify(cellList[index].cell));
+		cellList[index].cell = object;
+		console.log("affectation : " + JSON.stringify(object));
+		console.log("update : " + JSON.stringify(cellList[index].cell));
+		console.log("return : " + JSON.stringify(cellList));
+		console.log("===================================");
+		io.emit('update', JSON.stringify(cellList));//security leak, but i just want it to work so... no big deal!
 	});
 	
 	//call a new player

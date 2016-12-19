@@ -25,8 +25,8 @@
 			{
 				socket.emit('update', object);
 				socket.on('update', function(objectList){
+				
 					cellList = objectList;//security leak here but who care for now... lol
-					//console.log(JSON.stringify(cellList[x].cell.x));// in case for test!
 				});
 			}
 			
@@ -50,7 +50,7 @@
 				this.y = canvas.width/2;
 				this.radius = size;
 				this.color = "blue";
-				this.speed = 0.5;
+				this.speed = 0.1;
 			}
 
 			//player cells
@@ -67,17 +67,18 @@
 				
 				ctx.clearRect(0,0,canvas.width, canvas.height);//make sure you draw everything after this line
 				sendInfoToServer(myCell);//sending our position to the server
-				for (x = 0; x < cellList.length; x++) //to have a fixed camera I move other player
+				for (x = 0; x < JSON.parse(cellList).length; x++) //to have a fixed camera I move other player
 				{
 					xCamera -= movementX*myCell.speed;
 					yCamera -= movementY*myCell.speed;
-					//console.log(socket.id + " : " + JSON.stringify(cellList[x]));//keep in case!
-					if(socket.id != JSON.stringify(cellList[x].socketId))
+					//to pass over JSON.parse, I use a dummy variable to draw object in the array
+					if(socket.id != JSON.parse(cellList[x]).socketId)
 					{
-					JSON.stringify(cellList[x].cell.x) + xCamera;
-					JSON.stringify(cellList[x].cell.y) + yCamera;//here's a problem\\\
+					var cellToDraw = JSON.parse(cellList[x]).cell;
+					cellToDraw.x += xCamera;//doesn't matter what i do with these, because i just send myCell to server
+					cellToDraw.y += yCamera;//
 					}
-				drawCells(JSON.stringify(cellList[x].cell));
+				drawCells(cellToDraw);
 				}
 			},16);//60frame per second
 
