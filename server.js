@@ -30,9 +30,9 @@ io.sockets.on('connection', function(socket){
 	});	
 	
 	//recive from client and send back
-	socket.on('update', function(object){
+	socket.on('update', function(object){ /////// ---------------------------------problème ici, j'essai de changer un object dans mon array, mais le problème est que quand je renvoie mon array, c'est un string, et je peu pas la parse, ça plante
 		var index = 0; //used to find the position of client cell
-		for(i = 0; socket.id != cellList[i].id; i++)
+		for(i = 0; socket.id != cellList[i].id; i++)//utilise le id du socket
 			{
 				index = i;
 			}
