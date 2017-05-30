@@ -16,19 +16,17 @@ function drawCells(object){
 }
 
 function cells(size){
-	this.fixedCamera = false;
 	this.x = canvas.width/2;
 	this.y = canvas.width/2;
 	this.radius = size;
 	this.color = "blue";
-	this.speed = 0.1;
+	this.speed = 0.7;
 }
 
 //player cells
 
 var cellList = [];
 var myCell = new cells(30);
-myCell.fixedCamera = true;
 socket.emit("newPlayer", myCell); //send new player info to server
 socket.on("newPlayer", function(err){});
 			
@@ -37,12 +35,12 @@ socket.on("newPlayer", function(err){});
 var update = setInterval(function(){
 	ctx.clearRect(0,0,canvas.width, canvas.height);
 	updateStatWithServer(myCell);//update cellList
-	myCell.x -= movementX*myCell.speed;
-	myCell.y -= movementY*myCell.speed;
+	myCell.x += movementX*myCell.speed;
+	myCell.y += movementY*myCell.speed;
 	for (x = 0; x < cellList.length; x++){
 		var cellToDraw = cellList[x].cell;
-		cellToDraw.x += myCell.x;
-		cellToDraw.y += myCell.y;
+		cellToDraw.x -= (myCell.x - canvas.width/2);  //this is to center our cell and
+		cellToDraw.y -= (myCell.y - canvas.height/2); //set other cells relative to our cell
 		drawCells(cellToDraw);
 	}
 },16);//60frame per second
