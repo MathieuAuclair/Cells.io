@@ -1,14 +1,7 @@
 //connection with socket
 			
 var socket = io.connect();
-		
-function updateStatWithServer(object){
-	socket.emit('update', object);
-	socket.on('update', function(onlinePlayerList){
-		cellList = onlinePlayerList;
-	});
-}
-			
+				
 //canvas game
 		
 var canvas = document.getElementById("canvas");
@@ -32,12 +25,15 @@ function cells(size){
 }
 
 //player cells
+
 var cellList = [];
 var myCell = new cells(30);
-    myCell.fixedCamera = true;
+myCell.fixedCamera = true;
 socket.emit("newPlayer", myCell); //send new player info to server
-				
+socket.on("newPlayer", function(err){});
+			
 //update function
+
 var update = setInterval(function(){
 	ctx.clearRect(0,0,canvas.width, canvas.height);
 	updateStatWithServer(myCell);//update cellList
@@ -51,8 +47,12 @@ var update = setInterval(function(){
 	}
 },16);//60frame per second
 
-
-
+function updateStatWithServer(object){
+	socket.emit('update', object);
+	socket.on('update', function(onlinePlayerList){
+		cellList = onlinePlayerList;
+	});
+}
 
 //mouse position detection
 

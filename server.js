@@ -22,24 +22,44 @@ function player(cell, id){ //object to store player
 io.sockets.on('connection', function(socket){
 		
 	//call a new player
-	socket.on("new player", function(object){
+	socket.on("newPlayer", function(object){
+		console.log("new player has been created!");
 		cellList[cellList.length] = new player(object, socket.id);
+		console.log(" %s Connected with server", cellList.length);
+		io.emit("newPlayer");
 	});
 
 	//disconnect
 	socket.on('disconnect', function(data){
-	connections.splice(connections.indexOf(socket), 1);
-	console.log(" %s Connected with server", connections.length);
+		removePlayer(socket.id);
+		console.log(" %s Connected with server", cellList.length);	
 	});	
 	
 	//update client stat
 	socket.on('update', function(object){ 
-		for(i = 0; i < cellList.length; i++){
-				if(socket.id == cellList[i].id){
-					cellList[index].cell = object;
-					break;
-				}
+		var playerIndex = findPlayer(socket.id);
+		if(playerIndex != null){
+			cellList[findPlayer(socket.id)].cell = object;
+			io.emit('update', cellList);
 		}
-		io.emit('update', cellList);
 	});
 });
+
+function removePlayer(id){
+	try{
+		cellList.splice(findPlayer(id), 1);
+	}
+	catch(err){
+		console.log(err);
+	}
+}
+
+function findPlayer(player){
+	for(i=0; i<cellList.length; i++){
+		if(cellList[i].id == player){
+			return i;
+		}
+	}
+	console.log("error player not found...");
+}
+
