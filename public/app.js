@@ -15,20 +15,14 @@ function drawCells(object){
 	ctx.stroke();
 }
 
-function cells(size){
-	this.x = canvas.width/2;
-	this.y = canvas.width/2;
-	this.radius = size;
-	this.color = "blue";
-	this.speed = 0.7;
-}
-
 //player cells
 
+var myCell;
 var cellList = [];
-var myCell = new cells(30);
-socket.emit("newPlayer", myCell); //send new player info to server
-socket.on("newPlayer", function(err){});
+socket.emit("newPlayer"); //send new player info to server
+socket.on("newPlayer", function(playerCell){
+	myCell = playerCell;
+});
 			
 //update function
 
@@ -43,7 +37,7 @@ var update = setInterval(function(){
 		cellToDraw.y -= (myCell.y - canvas.height/2); //set other cells relative to our cell
 		drawCells(cellToDraw);
 	}
-},16);//60frame per second
+},33); //  ~ 30 frame per second
 
 function updateStatWithServer(object){
 	socket.emit('update', object);

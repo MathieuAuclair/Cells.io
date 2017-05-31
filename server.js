@@ -19,14 +19,25 @@ function player(cell, id){ //object to store player
 	this.cell = cell;
 }
 
+//player object
+
+function cells(size){
+	this.x = 0;
+	this.y = 0;
+	this.radius = size;
+	this.color = "blue";
+	this.speed = 15;
+}
+
+
 io.sockets.on('connection', function(socket){
 		
 	//call a new player
-	socket.on("newPlayer", function(object){
-		console.log("new player has been created!");
-		cellList[cellList.length] = new player(object, socket.id);
+	socket.on("newPlayer", function(){
+		var cell = new cells(15);
+		cellList[cellList.length] = new player(cell, socket.id);
 		console.log(" %s Connected with server", cellList.length);
-		io.emit("newPlayer");
+		io.emit("newPlayer", cell);
 	});
 
 	//disconnect
@@ -38,8 +49,11 @@ io.sockets.on('connection', function(socket){
 	//update client stat
 	socket.on('update', function(object){ 
 		var playerIndex = findPlayer(socket.id);
-		if(playerIndex != null){
-			cellList[findPlayer(socket.id)].cell = object;
+		if(isNaN(playerIndex)){
+			socket.disconnect();
+		}
+		else{
+			cellList[playerIndex].cell = object;
 			io.emit('update', cellList);
 		}
 	});
@@ -60,6 +74,6 @@ function findPlayer(player){
 			return i;
 		}
 	}
-	console.log("error player not found...");
+	console.log("there was a problem with a user...");
 }
 
