@@ -66,7 +66,7 @@ io.sockets.on('connection', function(socket){
 	//disconnect
 	socket.on('disconnect', function(data){
 		removePlayer(socket.id);
-		online++;
+		online--;
 		console.log(" %s Connected with server", online);	
 	});	
 	
@@ -75,7 +75,7 @@ io.sockets.on('connection', function(socket){
 		var playerIndex = findPlayer(socket.id);
 		if(isNaN(playerIndex)){
 			socket.disconnect();
-			online--;
+			online++;
 		}
 		else{
 			cellList[playerIndex].cell = object;
