@@ -84,6 +84,13 @@ io.sockets.on('connection', function(socket){
 	});
 });
 
+app.post("/kill", function(request, response){
+	var object = request.body;
+	console.log(object.id + " : was killed!");
+	removePlayer(object.id);//need to add a checkup on server side to remove cheat method
+	response.end();
+});
+
 function removePlayer(id){
 	try{
 		cellList.splice(findPlayer(id), 1);
@@ -106,7 +113,10 @@ var foodGenerator = setInterval(function(){
 	if(cellList.length < 500){
 		console.log("food generator activated!");
 		for(i = cellList.length; i < 550; i++){
-			cellList.push(new player(new cells(5), 0));
+			var food = new cells(5);
+			var foodIdSocket = new player(food, (food.color+cellList.length)); //color reduce risk of non unique key (not important)
+			cellList.push(foodIdSocket);
 		}
 	}
 }, 5000);
+
