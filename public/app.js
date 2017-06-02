@@ -33,7 +33,7 @@ var update = setInterval(function(){
 	myCell.y += movementY*myCell.speed;
 	for (x = 0; x < cellList.length; x++){
 		var cellToDraw = cellList[x].cell;
-		while(checkForCellKill(cellList[x])){}
+		checkForCellKill(cellList[x]);
 		cellToDraw.x -= (myCell.x - canvas.width/2);  //this is to center our cell and
 		cellToDraw.y -= (myCell.y - canvas.height/2); //set other cells relative to our cell
 		drawCells(cellToDraw);
@@ -51,11 +51,14 @@ function checkForCellKill(cellSocket){
 	var otherCell = cellSocket.cell;
 	var distanceBetweenCells = Math.sqrt(Math.pow(otherCell.x - myCell.x, 2) + Math.pow(otherCell.y - myCell.y, 2));
 	if(distanceBetweenCells < (otherCell.radius) && myCell.radius > otherCell.radius){
+		if(cellSocket.id != socket.id){
 		killOtherCells(cellSocket);
+		}
 	}
 }
 
 function killOtherCells(cellSocket){
+	myCell.radius += 1; //should be on server side!
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", "http://localhost:8080/kill", true);
 	xhr.setRequestHeader("Content-Type", "application/json");
