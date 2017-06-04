@@ -18,6 +18,7 @@ function drawCells(object){
 //player cells
 
 var myCell;
+var lastKilled; //last cells kill
 var cellList = [];
 socket.emit("newPlayer"); //send new player info to server
 socket.on("newPlayer", function(playerCell){
@@ -38,7 +39,7 @@ var update = setInterval(function(){
 		cellToDraw.y -= (myCell.y - canvas.height/2); //set other cells relative to our cell
 		drawCells(cellToDraw);
 	}
-},33); //  ~ 30 frame per second
+},100); //  ~ 10 frame per second
 
 function updateStatWithServer(object){
 	socket.emit('update', object);
@@ -50,9 +51,10 @@ function updateStatWithServer(object){
 function checkForCellKill(cellSocket){
 	var otherCell = cellSocket.cell;
 	var distanceBetweenCells = Math.sqrt(Math.pow(otherCell.x - myCell.x, 2) + Math.pow(otherCell.y - myCell.y, 2));
-	if(distanceBetweenCells < (otherCell.radius) && myCell.radius > otherCell.radius){
-		if(cellSocket.id != socket.id){
-		killOtherCells(cellSocket);
+	if(distanceBetweenCells < (myCell.radius) && myCell.radius > otherCell.radius){
+		if(cellSocket.id != socket.id && cellSocket.id != lastKilled){
+			lastKilled = cellSocket.id;
+			killOtherCells(cellSocket);
 		}
 	}
 }

@@ -4,10 +4,10 @@
   "description": "similar game to agar.io",
   "main": "server.js",
   "dependencies": {
-    "body-parser": "^1.17.2"
-    "mysql": "*",
-    "express": "*",
-    "socket.io": "*",
+    "body-parser":"*",
+    "mysql":"*",
+    "express":"*",
+    "socket.io":"*",
     "http": "*"
   },
   "scripts": {

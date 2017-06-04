@@ -1,16 +1,29 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var app = express();
+var port = (process.env.PORT || process.env.VCAP_APP_PORT || 8080);
 var server = require("http").createServer(app);
 var io = require("socket.io").listen(server);
+server.listen(port, function(){
+	console.log("server is running on localhost:8080\n*\n*\n*")
+});
 
-server.listen(process.env.PORT || 8080);
-console.log("server is running on localhost:8080\n*\n*\n*")
 
 
+app.enable('trust proxy');
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
-app.use(express.static("public"));
+
+app.use(function (req, res, next) {
+	if (req.secure) {
+		next();
+	} 
+	else {
+		res.redirect('https://' + req.headers.host + req.url);
+	}	
+});
+
+app.use(express.static(__dirname + "/public"));
 
 var cellList = []; //list of all cells with thiers ID
 var online = 0; //count of online user

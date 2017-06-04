@@ -1,0 +1,10 @@
+applications:
+- name: https-cellsio
+
+  # using the random symbol will assign a unique hostname for this app
+  host: cellsio-${random-word}
+  
+  command: node server.js
+
+  memory: 516M
+  
