@@ -62,7 +62,7 @@ function checkForCellKill(cellSocket){
 function killOtherCells(cellSocket){
 	myCell.radius += 1; //should be on server side!
 	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "http://localhost:8080/kill", true);
+	xhr.open("POST", "https://cellsio.mybluemix.net/kill", true);
 	xhr.setRequestHeader("Content-Type", "application/json");
 	xhr.send(JSON.stringify(cellSocket));
 }
@@ -81,4 +81,3 @@ function mousePosition(e) {
 		movementY = (mouseY-250)/canvas.height;
 	}
 }
-
